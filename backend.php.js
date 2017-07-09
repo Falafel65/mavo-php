@@ -1,6 +1,6 @@
 Mavo.Backend.register(Bliss.Class({
 	extends: Mavo.Backend,
-	id: "phpBackend",
+	id: "php",
 	constructor: function() {
 	    this.permissions.on(["login", "read"]);
 		this.key = this.mavo.id;
@@ -88,7 +88,7 @@ Mavo.Backend.register(Bliss.Class({
 
 	static: {
 		test: function(value) {
-		    return (value === 'phpBackend');
+		    return (value === 'php');
 		}
 	}
 }));
