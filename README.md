@@ -7,10 +7,12 @@ PHP is only used to write to files, and store uploads.
 
 My main goal was to not use external data providers like Dropbox or Github, as great as they are, if you have access to your own server.
 
+## Usage
 To use it, PHP need to have write access to files and some folders (for uploads).
-MV-APP name should be the same as json file name.
+MV-APP name should be the same as json file name. So if you have `mv-app="myApp"`, the json file will be `myApp.json`.
 
-Example, a navbar in BS4 :
+## Example
+A navbar in BS4 :
 ```
 <div id="mainMenu" mv-app="main-menu" mv-storage="php" class="collapse navbar-collapse justify-content-end">
     <ul class="navbar-nav">
@@ -23,4 +25,7 @@ Example, a navbar in BS4 :
 </div>
 ```
 
+## Disclaimer
 As I'm lazy, it's not battle tested. But it mostly works.
+
+Any feedbacks or bug reports are appreciated !
