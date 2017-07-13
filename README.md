@@ -24,8 +24,20 @@ A navbar in BS4 :
     </ul>
 </div>
 ```
+`main-menu.json` file :
+```
+{
+    "menus": [{
+        "title": "Entry 1",
+        "url": "file.html"
+    }, {
+        "title": "Entry 2",
+        "url": "file2.html"
+    }]
+}
+```
 
 ## Disclaimer
-As I'm lazy, it's not battle tested. But it mostly works.
+As I'm lazy, it's not fully tested. But it mostly works.
 
 Any feedbacks or bug reports are appreciated !
