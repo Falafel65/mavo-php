@@ -5,6 +5,7 @@ Mavo.Backend.register(Bliss.Class({
 	    this.permissions.on(["login", "read"]);
 		this.key = this.mavo.id;
 		this.url = new URL(this.key + '.json', Mavo.base);
+		this.phpFile = new URL('mavo-backend.php', Mavo.base);
 		
 		this.user = false;
 		this.login(true);
@@ -15,7 +16,8 @@ Mavo.Backend.register(Bliss.Class({
 	// path: Path to store data
 	// o: Arbitrary options
 	put: function(serialized, path = this.path, o = {}) {
-		var postUrl = new URL('mavo-backend.php', Mavo.base);
+		//new URL() to clone phpFile url
+		var postUrl = new URL(this.phpFile);
 		postUrl.searchParams.set('id', this.key);
 		//Default action to 'putData'
 		postUrl.searchParams.set('action', 'putData');
@@ -50,7 +52,8 @@ Mavo.Backend.register(Bliss.Class({
 		if (passive) {
 		    return Promise.resolve(this.user);
 		} else {
-			loginUrl = new URL('mavo-backend.php', Mavo.base);
+			//new URL() to clone phpFile url
+			loginUrl = new URL(this.phpFile);
 			//loginUrl.searchParams.set('id', this.key);
 			loginUrl.searchParams.set('action', 'login');
 			return this.request(loginUrl)
