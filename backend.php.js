@@ -88,7 +88,7 @@ Mavo.Backend.register(Bliss.Class({
 	logout: function() {
 		let loginUrl = new URL(this.phpFile);
 		// Say we logout
-		loginUrl.searchParams.set('action', 'logoff');
+		loginUrl.searchParams.set('action', 'logout');
 		// Logout from what ?
 		loginUrl.searchParams.set('id', this.key);
 		// Return if PHP unset $_SESSION['user']
