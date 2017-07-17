@@ -5,12 +5,12 @@
     $finalData = array();
     
     //Function to know if local file exists, or if can be created
-    function data_exists ($id = '') {
-        if ($id === '') {
+    function data_exists ($filePath = '') {
+        if ($filePath === '') {
             return false;
         }
         
-        $file = $id.'.json';
+        $file = realpath($filePath);
         if (file_exists($file)) {
             return is_writable($file);
         } else {
@@ -19,8 +19,8 @@
     }
     
     //Defaults _GET
-    if (!isset($_GET['id'])) {
-        $_GET['id'] = '';
+    if (!isset($_GET['source'])) {
+        $_GET['source'] = '';
     }
     if (!isset($_GET['action'])) {
         $_GET['action'] = 'login';
@@ -28,7 +28,7 @@
     
     switch ($_GET['action']) {
         case 'putFile': {
-            if (data_exists($_GET['id'])) {
+            if (data_exists($_GET['source'])) {
                 //Upload a file
                 if (isset($_GET['file']) && !empty($_GET['file'])) {
                     //We got a filename
@@ -36,6 +36,12 @@
                 } else {
                     //We have to make a random name
                     $filename = uniqid();
+                }
+                if (isset($_GET['path'])) {
+                    //Path given, let's try to write to it
+                    $path = explode(DIRECTORY_SEPARATOR, $_GET['path']);
+                    array_pop($path);
+                    $filename = implode(DIRECTORY_SEPARATOR, $path).DIRECTORY_SEPARATOR.$filename;
                 }
                 //Write to server
                 $status = file_put_contents($filename, base64_decode($datas));
@@ -60,18 +66,10 @@
         }
         break;
         case 'putData': {
-            if (data_exists($_GET['id'])) {
-                //Get & decode saved datas
-                $file = file_get_contents($_GET['id'].'.json');
-                $fileData = json_decode($file, true);
-                //Decode sent datas
-                $sentData = json_decode($datas, true);
-                //Merge them
-                $finalData = array_merge($fileData, $sentData);
-                //Save it
-                //JSON_PRETTY_PRINT to be more readable by humans after.
-                $status = file_put_contents($_GET['id'].'.json', json_encode($finalData, JSON_PRETTY_PRINT));
+            if (data_exists($_GET['source'])) {
+                $status = file_put_contents(realpath($_GET['source']), $datas);
             }
+            $status = true;
         }
         break;
         case 'login': {
@@ -88,19 +86,18 @@
             }
         }
         break;
+        case 'logout': {
+            if (isset($_SESSION['user']) && $_SESSION['user']['isLogged']) {
+                unset($_SESSION['user']);   
+            }
+            $status = (!isset($_SESSION['user']));
+        }
         default: {
             $finalData = array('action'=> $_GET['action']);
             $status = false;
         }
         break;
     }
-    if (isset($_GET['id']) && file_exists($_GET['id'].'.json')) {
-        if (isset($_GET['isEncoded']) && $_GET['isEncoded'] == true) {
-            
-        } else {
-            
-        }
-    } elseif (isset($_GET['action']))
     echo json_encode(array(
        'status'=> $status,
        'data'=> $finalData
