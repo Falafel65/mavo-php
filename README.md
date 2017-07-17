@@ -1,20 +1,21 @@
 # mavo-php
 PHP adaptor for [Mavo](http://mavo.io/).
 
-Mavo read json. PHP can write json. So I made them work together.
+Mavo read files. PHP can write files. So I made them work together.
 
-PHP is only used to write to files, and store uploads.
+PHP is used to manage login and write to files, as adapters should only do.
 
-My main goal was to not use external data providers like Dropbox or Github, as great as they are, if you have access to your own server.
+The main goal was to not use external data providers like Dropbox or Github, as great as they are, if you have access to your own server.
 
 ## Usage
 To use it, PHP need to have write access to files and some folders (for uploads).
-MV-APP name should be the same as json file name. So if you have `mv-app="myApp"`, the json file will be `myApp.json`.
+Set `mv-storage-type` to `php` and `mv-storage` to your favorite file path, as long as it's writable on the server.
+_Rumours say that `mv-storage-type` is case insensitive. So go on, write `PHP` like a maniac._
 
 ## Example
 A navbar in BS4 :
 ```
-<div id="mainMenu" mv-app="main-menu" mv-storage="php" class="collapse navbar-collapse justify-content-end">
+<div id="mainMenu" mv-app="main-menu" mv-storage-type="php" mv-storage="datas/menu.json" class="collapse navbar-collapse justify-content-end">
     <ul class="navbar-nav">
         <li class="nav-item" property="menus" mv-multiple>
             <a class="nav-link" property="url" href="#">
@@ -24,7 +25,7 @@ A navbar in BS4 :
     </ul>
 </div>
 ```
-`main-menu.json` file :
+`data/menu.json` file :
 ```
 {
     "menus": [{
@@ -38,6 +39,6 @@ A navbar in BS4 :
 ```
 
 ## Disclaimer
-As I'm lazy, it's not fully tested. But it mostly works.
+As I'm a bit lazy, it's not 100% tested. But it my usage showed that it mostly works.
 
 Any feedbacks or bug reports are appreciated !
