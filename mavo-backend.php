@@ -92,6 +92,7 @@
             }
             $status = (!isset($_SESSION['user']));
         }
+		break;
         default: {
             $finalData = array('action'=> $_GET['action']);
             $status = false;
