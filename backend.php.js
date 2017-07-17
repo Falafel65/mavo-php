@@ -2,9 +2,8 @@ Mavo.Backend.register(Bliss.Class({
 	extends: Mavo.Backend,
 	id: "php",
 	constructor: function() {
-	    this.permissions.on(["login", "read"]);
+		this.permissions.on(["login", "read"]);
 		this.key = this.mavo.id;
-		this.url = new URL(this.key + '.json', Mavo.base);
 		this.phpFile = new URL('mavo-backend.php', Mavo.base);
 		
 		this.user = false;
@@ -16,17 +15,22 @@ Mavo.Backend.register(Bliss.Class({
 	// path: Path to store data
 	// o: Arbitrary options
 	put: function(serialized, path = this.path, o = {}) {
-		//new URL() to clone phpFile url
+		// new URL() to clone phpFile url
 		var postUrl = new URL(this.phpFile);
+		// Send appID
 		postUrl.searchParams.set('id', this.key);
-		//Default action to 'putData'
+		// Send filename
+		postUrl.searchParams.set('source', this.source);
+		// Default action to 'putData'
 		postUrl.searchParams.set('action', 'putData');
+		// Add all the arbitrary things
 		for (var opt in o) {
 		    postUrl.searchParams.set(opt, o[opt]);
 		}
+		// Return POST request to server
 		return this.request(postUrl, serialized, 'POST');
 	},
-    //Src : https://github.com/mavoweb/mavo/blob/master/src/backend.github.js
+    // Src : https://github.com/mavoweb/mavo/blob/master/src/backend.github.js
 	upload: function(file, path = this.path) {
 		return Mavo.readFile(file)
 			.then(dataURL => {
@@ -40,22 +44,26 @@ Mavo.Backend.register(Bliss.Class({
 					path: path
 				});
 			})
-			//Resolve with url to file
-			.then(() => { return path });
+			//Resolve with file name on server
+			.then((fileData) => fileData.data.file);
 	},
 
-	//Try to login. If passive, on resolve with user data
+	// Try to login. If passive, resolve with user data if set
 	login: function(passive) {
-		var loginUrl;
-		
 		// Returns promise that resolves when the user has successfully authenticated
 		if (passive) {
 		    return Promise.resolve(this.user);
 		} else {
-			//new URL() to clone phpFile url
-			loginUrl = new URL(this.phpFile);
-			//loginUrl.searchParams.set('id', this.key);
+			// new URL() to clone phpFile url
+			let loginUrl = new URL(this.phpFile);
+			// Action is login
 			loginUrl.searchParams.set('action', 'login');
+			// Login from what ?
+			loginUrl.searchParams.set('id', this.key);
+			// Return request which can do 3 things :
+			//  - Resolve with user data (if logged)
+			//  - Resolve with false (if login failed)
+			//  - Resolve with a navigation to login page if not logged 
 			return this.request(loginUrl)
 				.then((userData) => {
 					if (userData.status) {
@@ -64,11 +72,13 @@ Mavo.Backend.register(Bliss.Class({
 							this.permissions.on(["edit", "save", "logout"]).off("login");
 							//Picked this from another backend, don't know if it has effect
 							this.mavo.element._.fire("mavo:login", { backend: this });
+							
+							return this.user;
 						} else {
-							return Promise.resolve(false);
+							return false;
 						}
 					} else {
-						return window.location.href = userData.data.loginUrl;
+						return window.location.href = new URL(userData.data.loginUrl, Mavo.base);
 					}
 				});
 		}
@@ -76,22 +86,27 @@ Mavo.Backend.register(Bliss.Class({
 
 	// Log current user out
 	logout: function() {
-		// Returns promise
-		this.user = false;
-		this.permissions.off(["edit", "add", "delete", "save", "logout"]).on("login");
-		//Picked this from another backend, don't know if it has effect
-		this.mavo.element._.fire("mavo:logout", { backend: this });
-		
-		return Promise.resolve(true);
+		let loginUrl = new URL(this.phpFile);
+		// Say we logout
+		loginUrl.searchParams.set('action', 'logoff');
+		// Logout from what ?
+		loginUrl.searchParams.set('id', this.key);
+		// Return if PHP unset $_SESSION['user']
+		return this.request(loginUrl)
+			.then((userData) => {
+				this.user = false;
+				this.permissions.off(["edit", "add", "delete", "save", "logout"]).on("login");
+				//Picked this from another backend, don't know if it has effect
+				this.mavo.element._.fire("mavo:logout", { backend: this });
+			});
 	},
 	
+	// Check isLogged value in this.user
 	isAuthenticated: function() {
 		return (typeof this.user.isLogged !== 'undefined' && this.user.isLogged);
 	},
 
 	static: {
-		test: function(value) {
-		    return (value === 'php');
-		}
+		test: value => value == "php"
 	}
 }));
