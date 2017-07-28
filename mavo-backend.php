@@ -4,7 +4,7 @@
     $status = false;
     $finalData = array();
     
-    //Function to know if local file exists, or if can be created
+    //Function to know if local file exists, or if it can be created
     function data_exists ($filePath = '') {
         if ($filePath === '') {
             return false;
@@ -41,8 +41,26 @@
                     //Path given, let's try to write to it
                     $path = explode(DIRECTORY_SEPARATOR, $_GET['path']);
                     array_pop($path);
-                    $filename = implode(DIRECTORY_SEPARATOR, $path).DIRECTORY_SEPARATOR.$filename;
+					$finalPath = implode(DIRECTORY_SEPARATOR, $path);
+					if (file_exists($finalPath) && is_dir($finalPath) && is_writeable($finalPath)) {
+                    	//File path exists, is a dir and is writeable. Perfect !
+						$filename = $finalPath.DIRECTORY_SEPARATOR.$filename;
+					}
                 }
+				//Find if file exists
+				if (file_exists($filename)) {
+					//Make a unique-ish name with a timestamp
+					$fileInfo = pathinfo($filename, PATHINFO_EXTENSION);
+					if (isset($fileInfo['extension'])) {
+						//If we got the extension, we remove it before adding path
+						$filename = substr($filename, 0, -(strlen($fileInfo['extension']) + 1));
+					} else {
+						//No extension ? Well, why not
+						$fileInfo['extension'] = '';
+					}
+					//Then add the time()
+					$filename = $filename."-".time().".".$fileInfo['extension'];
+				}
                 //Write to server
                 $status = file_put_contents($filename, base64_decode($datas));
                 
