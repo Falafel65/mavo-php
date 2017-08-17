@@ -3,12 +3,12 @@
     $datas = file_get_contents('php://input');
     $status = false;
     $finalData = array();
-	$isLogged = false;
+    $isLogged = false;
 
-	//Globally adding the logged state
-	if (isset($_SESSION['user']) && $_SESSION['user']['isLogged']) {
-		$isLogged = true;	
-	}
+    //Globally adding the logged state
+    if (isset($_SESSION['user']) && $_SESSION['user']['isLogged']) {
+        $isLogged = true;	
+    }
     
     //Function to know if local file exists, or if it can be created
     function data_exists ($filePath = '') {
@@ -43,6 +43,12 @@
                     //We have to make a random name
                     $filename = uniqid();
                 }
+                //Trying to sanitize filename with some light PHP
+                $filename_san = filter_var($filename, FILTER_SANITIZE_URL);
+                if ($filename_san !== false) {
+                    $filename = $filename_san;
+                }
+                
                 if (isset($_GET['path'])) {
                     //Path given, let's try to write to it
                     $path = explode(DIRECTORY_SEPARATOR, $_GET['path']);
@@ -56,10 +62,10 @@
 				//Find if file exists
 				if (file_exists($filename)) {
 					//Make a unique-ish name with a timestamp
-					$fileInfo = pathinfo($filename, PATHINFO_EXTENSION);
+					$fileInfo = pathinfo($filename);
 					if (isset($fileInfo['extension'])) {
-						//If we got the extension, we remove it before adding path
-						$filename = substr($filename, 0, -(strlen($fileInfo['extension']) + 1));
+						//If we got the extension, we only keep file name before adding path
+						$filename = $fileInfo['filename'];
 					} else {
 						//No extension ? Well, why not
 						$fileInfo['extension'] = '';
