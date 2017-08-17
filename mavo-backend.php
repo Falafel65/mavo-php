@@ -3,6 +3,12 @@
     $datas = file_get_contents('php://input');
     $status = false;
     $finalData = array();
+	$isLogged = false;
+
+	//Globally adding the logged state
+	if (isset($_SESSION['user']) && $_SESSION['user']['isLogged']) {
+		$isLogged = true;	
+	}
     
     //Function to know if local file exists, or if it can be created
     function data_exists ($filePath = '') {
@@ -28,7 +34,7 @@
     
     switch ($_GET['action']) {
         case 'putFile': {
-            if (data_exists($_GET['source'])) {
+            if ($isLogged && data_exists($_GET['source'])) {
                 //Upload a file
                 if (isset($_GET['file']) && !empty($_GET['file'])) {
                     //We got a filename
@@ -84,14 +90,14 @@
         }
         break;
         case 'putData': {
-            if (data_exists($_GET['source'])) {
+            if ($isLogged && data_exists($_GET['source'])) {
                 $status = file_put_contents(realpath($_GET['source']), $datas);
             }
             $status = true;
         }
         break;
         case 'login': {
-            if (isset($_SESSION['user']) && $_SESSION['user']['isLogged']) {
+            if ($isLogged) {
                 //If user logged, send user data
                 $finalData = $_SESSION['user'];
                 $status = true;
@@ -105,7 +111,7 @@
         }
         break;
         case 'logout': {
-            if (isset($_SESSION['user']) && $_SESSION['user']['isLogged']) {
+            if ($isLogged) {
                 unset($_SESSION['user']);   
             }
             $status = (!isset($_SESSION['user']));
