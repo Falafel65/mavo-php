@@ -1,0 +1,7 @@
+{
+    "users": [{
+        "login": "test",
+        "password": "50cdbcf76f4a457f5115ad1d089f057a", //It's test. Very secure indeed.
+        "name": "Amazing tester"
+    }]
+}
