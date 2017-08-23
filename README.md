@@ -23,6 +23,7 @@ An user is defined by 3 things : a login, a password and a name.
 
 To manage users, for now you'll have to manually edit the json file.
 The password is a md5 hashed string, salted with `mavo-`.
+If you want to change the salt, or use another method to store password, have a look into `login.php`, line 9
 
 
 ## Example
