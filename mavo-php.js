@@ -97,8 +97,7 @@ Mavo.Backend.register(Bliss.Class({
 				this.user = false;
 				this.permissions.off(["edit", "add", "delete", "save", "logout"]).on("login");
 				//Picked this from another backend, don't know if it has effect
-				this.mavo.element._.
-				("mavo:logout", { backend: this });
+				this.mavo.element._.fire("mv-logout", { backend: this });
 			});
 	},
 	
