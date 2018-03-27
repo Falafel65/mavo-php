@@ -28,7 +28,15 @@ Mavo.Backend.register(Bliss.Class({
 		    postUrl.searchParams.set(opt, o[opt]);
 		}
 		// Return POST request to server
-		return this.request(postUrl, serialized, 'POST');
+		return this.request(postUrl, serialized, 'POST')
+			.then((data) => {
+				if (typeof (data.status) !== 'undefined') {
+					if (data.status === false) {
+						this.mavo.error('Mavo-PHP : save error', data.data);	
+					}
+				}
+				return data;
+			});
 	},
     // Src : https://github.com/mavoweb/mavo/blob/master/src/backend.github.js
 	upload: function(file, path = this.path) {

@@ -97,9 +97,17 @@
         break;
         case 'putData': {
             if ($isLogged && data_exists($_GET['source'])) {
-                $status = file_put_contents(realpath($_GET['source']), $datas);
+                $resWrite = file_put_contents($_GET['source'], $datas);
+                if ($resWrite !== false) {
+                    $status = true;
+                }
+            } else {
+                $finalData['debug'] = array(
+                    'isLogged'=> $isLogged,
+                    'data_exists'=> data_exists($_GET['source']),
+                    'source'=> $_GET['source']
+                );
             }
-            $status = true;
         }
         break;
         case 'login': {
