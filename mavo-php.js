@@ -78,8 +78,8 @@ Mavo.Backend.register(Bliss.Class({
 						this.user = userData.data;
 						if (this.isAuthenticated()) {
 							this.permissions.on(["edit", "save", "logout"]).off("login");
-							//Picked this from another backend, don't know if it has effect
-							this.mavo.element._.fire("mv-login", { backend: this });
+							//Picked this from github backend, don't know if it has effect
+							$.fire(this.mavo.element, "mv-login", { backend: this });
 							
 							return this.user;
 						} else {
@@ -105,7 +105,7 @@ Mavo.Backend.register(Bliss.Class({
 				this.user = false;
 				this.permissions.off(["edit", "add", "delete", "save", "logout"]).on("login");
 				//Picked this from another backend, don't know if it has effect
-				this.mavo.element._.fire("mv-logout", { backend: this });
+				$.fire(this.mavo.element, "mv-logout", { backend: this });
 			});
 	},
 	
