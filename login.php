@@ -25,10 +25,16 @@
                 unset($_SESSION['previous']);
             }
             header('Location: '.$url);
+        } else {
+            header('Location: '.$_SERVER['PHP_SELF'].'?error');    
         }
     } else {
         if (isset($_GET['ref'])) {
             $_SESSION['previous'] = $_GET['ref'];
         }
-        readfile('login.html');
+        $loginPage = file_get_contents('login.html');
+        if (isset($_GET['error'])) {
+            $loginPage = str_replace('</h1>', '</h1><div class="alert alert-danger">Error in your login</div>', $loginPage);
+        }
+        echo $loginPage;
     }
