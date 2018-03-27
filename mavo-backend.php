@@ -12,15 +12,15 @@
     
     //Function to know if local file exists, or if it can be created
     function data_exists ($filePath = '') {
-        if ($filePath === '') {
+        if (trim($filePath) === '') {
             return false;
         }
         
-        $file = realpath($filePath);
         if (file_exists($file)) {
+            $file = realpath($filePath);
             return is_writable($file);
         } else {
-            return touch($file);
+            return touch($filePath);
         }
     }
     
