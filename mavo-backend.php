@@ -35,45 +35,59 @@
     switch ($_GET['action']) {
         case 'putFile': {
             if ($isLogged && data_exists($_GET['source'])) {
-                //Upload a file
+                // Upload a file
                 if (isset($_GET['file']) && !empty($_GET['file'])) {
-                    //We got a filename
+                    // We got a filename
                     $filename = $_GET['file'];
                 } else {
-                    //We have to make a random name
+                    // We have to make a random name
                     $filename = uniqid();
                 }
-                //Trying to sanitize filename with some light PHP
+                // Trying to sanitize filename with some light PHP
                 $filename_san = filter_var($filename, FILTER_SANITIZE_URL);
                 if ($filename_san !== false) {
                     $filename = $filename_san;
                 }
                 
                 if (isset($_GET['path'])) {
-                    //Path given, let's try to write to it
+                    // Path given, let's try to write to it
                     $path = explode(DIRECTORY_SEPARATOR, $_GET['path']);
                     array_pop($path);
 					$finalPath = implode(DIRECTORY_SEPARATOR, $path);
 					if (file_exists($finalPath) && is_dir($finalPath) && is_writeable($finalPath)) {
-                    	//File path exists, is a dir and is writeable. Perfect !
-						$filename = $finalPath.DIRECTORY_SEPARATOR.$filename;
+                    	// File path exists, is a dir and is writeable. Almost perfect !
+						if (substr($finalPath, -1) === DIRECTORY_SEPARATOR) {
+							// Remove the trailing sla...DIRECTORY_SEPARATOR
+							$finalPath = substr($finalPath, 0, -1);
+						}
+					} else {
+						// By default, the current dir
+						$finalPath = __DIR__;
 					}
-                }
-				//Find if file exists
+                } else {
+					// By default, the current dir
+					$finalPath = __DIR__;
+				}
+				// Setting the final path
+				$filename = $finalPath.DIRECTORY_SEPARATOR.$filename;
+				
+				// Find if file exists
 				if (file_exists($filename)) {
-					//Make a unique-ish name with a timestamp
+					// Make a unique-ish name with a timestamp
 					$fileInfo = pathinfo($filename);
 					if (isset($fileInfo['extension'])) {
-						//If we got the extension, we only keep file name before adding path
+						// If we got the extension, we only keep file name before adding path
 						$filename = $fileInfo['filename'];
 					} else {
-						//No extension ? Well, why not
+						// No extension ? Well, why not
 						$fileInfo['extension'] = '';
 					}
-					//Then add the time()
+					// Then add the time()
 					$filename = $filename."-".time().".".$fileInfo['extension'];
+					// Then the add filepath, again
+					$filename = $finalPath.DIRECTORY_SEPARATOR.$filename;
 				}
-                //Write to server
+                // Write to server
                 $status = file_put_contents($filename, base64_decode($datas));
                 
                 if ($status) {
