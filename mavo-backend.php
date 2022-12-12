@@ -16,7 +16,7 @@
 			return false;
 		}
 
-		if (file_exists($file)) {
+		if (file_exists($filePath)) {
 			$file = realpath($filePath);
 			return is_writable($file);
 		} else {
