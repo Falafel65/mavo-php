@@ -27,7 +27,7 @@ If you want to change the salt, or use another method to store password, have a 
 
 
 ## Example
-A navbar in BS4 :
+A navbar in BootStrap 4 :
 ```
 <div id="mainMenu" mv-app="main-menu" mv-storage-type="php" mv-storage="datas/menu.json" class="collapse navbar-collapse justify-content-end">
     <ul class="navbar-nav">
@@ -57,4 +57,4 @@ As I'm a bit lazy, it's not 104% tested. But it my usage showed that it mostly w
 
 Any feedbacks or bug reports are appreciated !
 
-_(thanks to @stalcer for #6 and @joyously for #7)_
+_(thanks to @stalcer for #6, @joyously for #7, @GalinhaLX for #12)_
