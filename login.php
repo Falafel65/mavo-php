@@ -3,8 +3,17 @@
 
 	function login($post) {
 		if (isset($post['login'], $post['password'])) {
-			$loginFile = file_get_contents('mavo-users.json');
+			$jsonUserFile = 'mavo-users.json';
+			if (!file_exists($jsonUserFile)) {
+				// Can't log if there is no users file
+				return false;
+			}
+			$loginFile = file_get_contents($jsonUserFile);
 			$loginData = json_decode($loginFile, true);
+			if (is_null($loginData)) {
+				// User file is not a valid json to PHP
+				return false;
+			}
 			foreach ($loginData['users'] as $log) {
 				if ($log['login'] === $post['login']) {
 					if ($log['password'] === md5('mavo-' . $post['password'])) {
