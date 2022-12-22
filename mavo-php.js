@@ -80,40 +80,40 @@
 		 * @returns {Promise}
 		 */
 		login (passive) {
-			// Returns promise that resolves when the user has successfully authenticated
-			if (passive) {
-				return Promise.resolve(this.user);
-			} else {
-				// new URL() to clone phpFile url to set searchParams
-				const loginUrl = new URL(this.phpFile);
-				// Action is login
-				loginUrl.searchParams.set('action', 'login');
-				// Login from what ?
-				loginUrl.searchParams.set('id', this.key);
-				// Return request which can do 3 things :
-				//  - Resolve with user data (if logged)
-				//  - Resolve with false (if login failed)
-				//  - Resolve with a navigation to login page if not logged 
-				return this.request(loginUrl)
-					.then((userData) => {
-						if (userData.status) {
-							this.user = userData.data;
-							if (this.isAuthenticated()) {
-								// Update permissions if logged
-								this.permissions.on([
-									'edit', 'save', 'logout'
-								]).off('login');
+			// new URL() to clone phpFile url to set searchParams
+			const loginUrl = new URL(this.phpFile);
+			// Action is login
+			loginUrl.searchParams.set('action', 'login');
+			// Login from what ?
+			loginUrl.searchParams.set('id', this.key);
+			// Return request which can do 3 things :
+			//  - Resolve with user data (if logged)
+			//  - Resolve with false (if login failed)
+			//  - Resolve with a navigation to login page if not logged
+			return this.request(loginUrl)
+				.then((userData) => {
+					if (userData.status) {
+						this.user = userData.data;
+						if (this.isAuthenticated()) {
+							// Update permissions if logged
+							this.permissions.on([
+								'edit', 'save', 'logout'
+							]).off('login');
 
-								return this.user;
-							} else {
-								return false;
-							}
+							return this.user;
+						} else {
+							return false;
+						}
+					} else {
+						if (passive) {
+							// Resolve with the user data
+							return Promise.resolve(this.user);
 						} else {
 							// Redirect to login page
 							return window.location.href = new URL(userData.data.loginUrl, Mavo.base);
 						}
-					});
-			}
+					}
+				});
 		};
 
 		/**
