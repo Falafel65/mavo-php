@@ -10,11 +10,44 @@
 			this.key = this.mavo.id || 'mavo';
 			this.phpFile = new URL('mavo-backend.php', this.url.origin);
 
+			this.secure = typeof o.secure !== 'undefined';
+
 			// Default permissions
 			this.permissions.on(['login', 'read']);
 			// Try to get the user
 			this.user = false;
 			this.login(true);
+		};
+
+		// Low-level functions for reading data. You don’t need to implement this
+		// if the mv-storage/mv-source value is a URL and reading the data is just
+		// a GET request to that URL.
+		get (url = new URL(this.url)) {
+			// Should return a promise that resolves to the data as a string or object
+			if (this.secure) {
+				const postUrl = new URL(this.phpFile);
+				// Send appID
+				postUrl.searchParams.set('id', this.key);
+				// Send filename
+				postUrl.searchParams.set('source', this.source);
+				// Set action to 'getData'
+				postUrl.searchParams.set('action', 'getData');
+
+				return this.request(postUrl)
+					.then((data) => {
+						if (typeof (data.status) !== 'undefined') {
+							if (data.status === false) {
+								this.mavo.error('Mavo-PHP : get error', data.data);
+							}
+
+							return data.data;
+						}
+
+						return data;
+					});
+			} else {
+				return Mavo.Backend.prototype.get(url);
+			}
 		};
 
 		/**

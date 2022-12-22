@@ -124,6 +124,26 @@
 				}
 			}
 			break;
+		case 'getData': {
+				// Trying to sanitize filename with some light PHP
+				$filename = filter_var($_GET['source'], FILTER_SANITIZE_URL);
+				// Setting the final path
+				$filename = __DIR__ . DIRECTORY_SEPARATOR . $filename;
+				// Find if file exists
+				if (file_exists($filename)) {
+					$resRead = file_get_contents($filename);
+					if ($resRead !== false) {
+						$status = true;
+						$finalData = $resRead;
+					}
+				} else {
+					$finalData['debug'] = array(
+						'filename' => $filename,
+						'source' => $_GET['source']
+					);
+				}
+			}
+			break;
 		case 'login': {
 				if ($isLogged) {
 					// If user logged, send user data

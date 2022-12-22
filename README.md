@@ -25,6 +25,9 @@ To manage users, for now you'll have to manually edit the json file.
 The password is a md5 hashed string, salted with `mavo-`.
 If you want to change the salt, or use another method to store password, have a look into `login.php`, line 9
 
+## Security
+You may want, for an obscure reason, to protect your data files of public direct access. For that, you'll maybe put them in a folder with an server-side rule of access denying.
+But you still want your Mavo app to access the datas. Put the `mv-storage-secure` attribute on the app and the PHP backend will fetch the files for you.
 
 ## Example
 A navbar in BS4 :
