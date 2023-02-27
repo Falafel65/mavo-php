@@ -37,7 +37,11 @@
 					.then((data) => {
 						if (typeof (data.status) !== 'undefined') {
 							if (data.status === false) {
-								this.mavo.error('Mavo-PHP : get error', data.data);
+								if (this.isAuthenticated()) {
+									this.mavo.error('Mavo-PHP : data fetch error', data.data);
+								} else {
+									this.mavo.error('Mavo-PHP : you need to be logged in to fetch this data', data.data);
+								}
 							}
 
 							return data.data;
