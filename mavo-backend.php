@@ -130,7 +130,7 @@
 				// Setting the final path
 				$filename = __DIR__ . DIRECTORY_SEPARATOR . $filename;
 				// Find if file exists
-				if (file_exists($filename)) {
+				if ($isLogged && file_exists($filename)) {
 					$resRead = file_get_contents($filename);
 					if ($resRead !== false) {
 						$status = true;
